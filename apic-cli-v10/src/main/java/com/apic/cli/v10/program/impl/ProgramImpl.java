@@ -4,6 +4,9 @@
 package com.apic.cli.v10.program.impl;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,15 +48,16 @@ public class ProgramImpl implements Program {
 		LOG.info("APIC CLI Path: " + basePath);
 		LOG.info(Constants.LOG_PATTERN_LINE_EMPTY);
 		
-		String[] commands = new String[] {
-			"client-creds:clear",
-			"client-creds:set " + basePath + "credentials.json"
+		String baseCommand = basePath + Constants.PROPERTY_PROGRAM_NAME_APIC;
+		List<String>[] commands = new List[]{
+			Arrays.asList(baseCommand, "--accept-license")
+			,Arrays.asList(baseCommand, "client-creds:clear")
+			,Arrays.asList(baseCommand, "client-creds:set", basePath + "credentials.json")
 		};
 		
-		String baseCommand = basePath + Constants.PROPERTY_PROGRAM_NAME_APIC;
-		for (String command : commands) {
-			LOG.info("Executing command... " + baseCommand + " " + command);
-			Process process = new ProcessBuilder(baseCommand, command).start();
+		for (List<String> command : commands) {
+			LOG.info("Executing command... " + command.stream().map(Object::toString).collect(Collectors.joining(" ")));
+			Process process = new ProcessBuilder(command).start();
 			process.getOutputStream().close();
 			utility.extractOutput(process);
 		}
