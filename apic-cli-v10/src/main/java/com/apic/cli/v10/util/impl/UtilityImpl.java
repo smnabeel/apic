@@ -5,6 +5,8 @@ package com.apic.cli.v10.util.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +39,27 @@ public class UtilityImpl implements Utility {
 	}
 
 	@Override
-	public void extractOutput(Process process) throws Exception {
+	public Process executeCommand(List<String>[] commands) throws Exception {
+		Process process = null;
+		for (List<String> command : commands) {
+			String cmd = command.stream().map(Object::toString).collect(Collectors.joining(" "));
+			LOG.info("Executing command... " + cmd);
+			process = new ProcessBuilder(command).start();
+			process.getOutputStream().close();
+		}
+		return process;
+	}
+	
+	@Override
+	public String[] extractCommandOutput(Process process) throws Exception {
+		String[] output = null;
 		String line;
 		LOG.info("Command Standard Output:");
 		LOG.info("------------------------");
 		BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		while ((line = stdout.readLine()) != null) {
 			LOG.info(line);
+			output = new String[] {line};
 		}
 		stdout.close();	
 		LOG.info(Constants.LOG_PATTERN_LINE_EMPTY);
@@ -60,5 +76,6 @@ public class UtilityImpl implements Utility {
 			LOG.info(line);
 		}
 		stderr.close();
+		return output;
 	}
 }
