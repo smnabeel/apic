@@ -44,14 +44,25 @@ public class ProgramImpl implements Program {
 
 	@Override
 	public void executeForWindows(String... args) throws Exception {
+		String[] attributes = null;
 		Context context = new Context();
 		context.setBasePath(args[1] + File.separator);
 		context.setApiKey(args[2]);
-		context.setApicCloudManager(apicHelper.getServerName(context));
+		context.setUsername(args[3]);
 		
+		context.setApicCloudManager(apicHelper.getServerName(context));
 		LOG.info("API Connect Cloud Manager URL: " + context.getApicCloudManager());
 		
 		apicHelper.doSsoLoginInApiC(context);
+		
+		apicHelper.verifyPostLoginInfo(context);
+		LOG.info("Logged-in user: " + context.getUsername());
+		
+		attributes = apicHelper.getOrgInfo(context);
+		context.setOrgInstance(attributes[0].trim());
+		context.setOrgId(attributes[1].trim());
+		
+		LOG.info("Orginzation details: " + context.getOrgInstance() + " \\ " + context.getOrgId());
 	}
 
 	@Override

@@ -6,6 +6,7 @@ package com.apic.cli.v10.util.impl;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,4 +46,18 @@ public class ApicHelperImpl implements ApicHelper {
 		utility.extractCommandOutput(utility.executeCommand(new List[] {Arrays.asList(context.getCommandPrefix(), "login", "-s", context.getApicCloudManager(), "--sso", "--context", "provider", "--apiKey", context.getApiKey())}));		
 	}
 
+	@Override
+	public void verifyPostLoginInfo(Context context) throws Exception {
+		String username = utility.extractCommandOutput(utility.executeCommand(new List[] {Arrays.asList(context.getCommandPrefix(), "me:get", "-s", context.getApicCloudManager())}))[0].split(" ")[0];
+		if (!context.getUsername().equalsIgnoreCase(username)) {
+			throw new Exception("Username " + username + " not matched with command line arguement: " + context.getUsername());
+		}
+	}
+
+	@Override
+	public String[] getOrgInfo(Context context) throws Exception {
+		String response = utility.extractCommandOutput(utility.executeCommand(new List[] {Arrays.asList(context.getCommandPrefix(), "orgs:list", "-s", context.getApicCloudManager(), "--my")}))[0];
+		String[] attributes = StringUtils.normalizeSpace(response).split(" ");
+		return new String[] {attributes[0], attributes[3].substring(attributes[3].lastIndexOf("/")+1)};
+	}
 }

@@ -14,6 +14,9 @@ public class Context {
 	private String commandPrefix;
 	private String apicCloudManager;
 	private String apiKey;
+	private String username;
+	private String orgId;
+	private String orgInstance;
 	
 	public String getBasePath() {
 		return basePath;
@@ -36,5 +39,23 @@ public class Context {
 	}
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+	public String getOrgInstance() {
+		return orgInstance;
+	}
+	public void setOrgInstance(String orgInstance) {
+		this.orgInstance = orgInstance;
 	}
 }
